@@ -1,0 +1,22 @@
+{
+  "name": "450",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mouayad03/294.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mouayad03/294/issues"
+  },
+  "homepage": "https://github.com/mouayad03/294#readme",
+  "devDependencies": {
+    "cypress": "^12.1.0"
+  }
+}
