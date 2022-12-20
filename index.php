@@ -1,6 +1,7 @@
 <?php $page_title = "Home ★ Productive"; ?>
 <?php require "view/blocks/page_start.php"; ?>
 <h1>Welcome to Productive!</h1>
+<h2>Popular Products</h2>
 <div style="margin-bottom: 2em;">
 	<a href="product.php" class="button">Create New Product</a>
 </div>
