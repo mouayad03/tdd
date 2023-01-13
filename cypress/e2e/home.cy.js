@@ -17,7 +17,6 @@ const createAProduct = () => {
 describe('shop app if signed sign', () => {
   beforeEach(() => {
     cy.visit('http://localhost')
-    cy.contains('Categories').click()
     cy.get('input#username-field').type('root')
     cy.get('input#password-field').type('sUP3R53CR3T#')
     cy.get('button[type=submit').click()

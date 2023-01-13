@@ -36,6 +36,7 @@ loginOverlay.hide = function () {
 }
 
 function onLoginSuccess(request) {
+    location.reload();
 	loginStatus.updateButtonText('Log Out');
 	loginStatus.href = 'logout.php';
 	loginOverlay.hide();

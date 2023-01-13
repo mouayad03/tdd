@@ -1,45 +1,82 @@
 var productsTable = document.getElementById("products-table");
+const sortDirectionSelect = document.getElementById('sort-direction');
 
 /**
  * Called when the products loading request succeeded.
  * @param request The request object.
  */
 function onProductsLoaded(request) {
-	//Remove the outdated product entries.
-	productsTable.innerHTML = "";
+  // Remove the outdated product entries.
+  productsTable.innerHTML = "";
 
-	var products = JSON.parse(request.responseText);
-		for (var i = 0; i < products.length; i++) {
-			if (products[i].active == 1) {	
-				var productRow = document.createElement("tr");
-				productsTable.appendChild(productRow);
+  var products = JSON.parse(request.responseText);
 
-				var skuCell = document.createElement("td");
-				skuCell.innerText = products[i].sku;
-				productRow.appendChild(skuCell);
+  // Sort the products by name and category.
+  const sortDirection = sortDirectionSelect.value;
+  if (sortDirection === 'ascending') {
+    products.sort((a, b) => a.name.localeCompare(b.name));
+  } 
+  else if (sortDirection === 'descending') {
+    products.sort((a, b) => b.name.localeCompare(a.name));
+  } 
+  else if (sortDirection === 'category') {
+    products = products.filter(product => product.id_category !== null);
+    products.sort((a, b) =>  {
+      if(b.id_category > a.id_category) {
+        return -1;
+      }
+      if (a.id_category > b.id_category) {
+        return 1;
+      }
+      return 0;
+    });
+  }
 
-				var nameCell = document.createElement("td");
-				nameCell.innerText = products[i].name;
-				productRow.appendChild(nameCell);
+  // Iterate through the sorted products and add them to the table.
+  for (var i = 0; i < products.length; i++) {
+    if (products[i].active == 1) {  
+      	var productRow = document.createElement("tr");
+     	productsTable.appendChild(productRow);
 
-				var priceCell = document.createElement("td");
-				priceCell.innerText = products[i].price ? "CHF " + products[i].price : "";
-				productRow.appendChild(priceCell);
+		var skuCell = document.createElement("td");
+		skuCell.innerText = products[i].sku;
+		productRow.appendChild(skuCell);
 
-				if (products[i].stock <= 3) {
-					var stockCell = document.createElement("td");
-					stockCell.innerText = products[i].stock;
-					stockCell.className = "stock";
-					productRow.appendChild(stockCell);
-				}
-				else {
-					var stockCell = document.createElement("td");
-					stockCell.innerText = products[i].stock;
-					productRow.appendChild(stockCell);
-				}
-			}
+		var nameCell = document.createElement("td");
+		nameCell.innerText = products[i].name;
+		productRow.appendChild(nameCell);
+
+		var categoryIdCell = document.createElement("td");
+		categoryIdCell.innerText = products[i].id_category ? products[i].id_category : "-";
+		productRow.appendChild(categoryIdCell);
+
+		var priceCell = document.createElement("td");
+		priceCell.innerText = products[i].price ? "CHF " + products[i].price : "";
+		productRow.appendChild(priceCell);
+
+		if (products[i].stock <= 3) {
+			var stockCell = document.createElement("td");
+			stockCell.innerText = products[i].stock;
+			stockCell.className = "stock";
+			productRow.appendChild(stockCell);
 		}
+		else {
+			var stockCell = document.createElement("td");
+			stockCell.innerText = products[i].stock;
+			productRow.appendChild(stockCell);
+     	}
+
+		var imageCell = document.createElement("td");
+		var image = document.createElement("img");
+		image.src = products[i].product_image;
+    image.className = "imageShow";
+		imageCell.appendChild(image);
+		productRow.appendChild(imageCell);
+    }
+  }
 }
+
+
 
 /**
  * Called when the products loading request failed.
@@ -53,36 +90,6 @@ function onProductsLoadingError(request) {
 
 	alert("Error: " + request.statusText);
 }
-
-/**
- * Called when the delete button is pressed on one of the product table rows.
- * @param event The event object.
- */
-function onDeleteButtonPressed(event) {
-	var sku = event.currentTarget.getAttribute("product-sku");
-	if (!confirm("Are you sure that you want to delete the product with the SKU " + sku + "?")) {
-		return;
-	}
-
-	sendRequest("DELETE", "API/V1/Product/" + sku, onProductDeleted, onProductDeletionError);
-}
-
-/**
- * Called when the products deletion request succeeded.
- * @param request The request object.
- */
-function onProductDeleted(request) {
-	refreshProducts();
-}
-
-/**
- * Called when the products deletion request failed.
- * @param request The request object.
- */
-function onProductDeletionError(request) {
-	alert("The product could not be deleted. Please try again!");
-}
-
 /**
  * Refreshes the products table with the newest product list from the API.
  */
@@ -92,3 +99,5 @@ function refreshProducts() {
 
 //Load the products initially.
 refreshProducts();
+
+sortDirectionSelect.addEventListener('change', refreshProducts);
